@@ -23,8 +23,8 @@ ROOT_ROMOUNTOPTIONS="bind"
 ROOT_ROMOUNTOPTIONS_DEVICE="noatime,nodiratime"
 
 ROOT_RWFSTYPE=""
-ROOT_RWMOUNTOPTIONS="rw,noatime,mode=755 tmpfs"
-ROOT_RWMOUNTOPTIONS_DEVICE="rw,noatime,mode=755"
+ROOT_RWMOUNTOPTIONS="rw,noatime tmpfs"
+ROOT_RWMOUNTOPTIONS_DEVICE="rw,noatime"
 
 early_setup() {
 	mkdir -p /proc
@@ -145,8 +145,8 @@ mount_and_boot() {
 
 	# Determine which unification file system to use
 	union_fs_type=""
-	if grep -w "overlay" /proc/filesystems >/dev/null; then
-		union_fs_type="overlay"
+	if grep -w "overlayfs" /proc/filesystems >/dev/null; then
+		union_fs_type="overlayfs"
 	elif grep -w "aufs" /proc/filesystems >/dev/null; then
 		union_fs_type="aufs"
 	else
@@ -155,13 +155,13 @@ mount_and_boot() {
 
 	# Create/Mount overlay root file system
 	case $union_fs_type in
-		"overlay")
+		"overlayfs")
 			mkdir -p $ROOT_RWMOUNT/upperdir $ROOT_RWMOUNT/work
-			$MOUNT -t overlay overlay \
+			$MOUNT -t overlayfs overlayfs \
 				-o "$(printf "%s%s%s" \
+					"rw,"\
 					"lowerdir=$ROOT_ROMOUNT," \
-					"upperdir=$ROOT_RWMOUNT/upperdir," \
-					"workdir=$ROOT_RWMOUNT/work")" \
+					"upperdir=$ROOT_RWMOUNT/upperdir")" \
 				$ROOT_MOUNT
 			;;
 		"aufs")
