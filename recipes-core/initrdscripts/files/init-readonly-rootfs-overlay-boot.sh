@@ -7,6 +7,8 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 MOUNT="/bin/mount"
 UMOUNT="/bin/umount"
+FSCK="/bin/e2fsck"
+MKFS="/bin/mkfs.ext4 -F"
 
 INIT="/sbin/init"
 ROOT_ROINIT="/sbin/init"
@@ -124,7 +126,6 @@ mount_and_boot() {
 	# If a read-write device was specified via kernel command line, use
 	# it, otherwise default to tmpfs.
 	if [ -n "${ROOT_RWDEVICE}" ]; then
-		
 		ROOT_RWMOUNTPARAMS="-o $ROOT_RWMOUNTOPTIONS_DEVICE $ROOT_RWDEVICE"
 		if [ -n "${ROOT_RWFSTYPE}" ]; then
 			ROOT_RWMOUNTPARAMS="-t $ROOT_RWFSTYPE $ROOT_RWMOUNTPARAMS"
@@ -132,7 +133,10 @@ mount_and_boot() {
 	else
 		ROOT_RWMOUNTPARAMS="-t tmpfs -o $ROOT_RWMOUNTOPTIONS"
 	fi
-
+	$FSCK "${ROOT_RWDEVICE}"
+	if [ $? -gt 1]; then
+		$MKFS "${ROOT_RWDEVICE}";
+	fi
 	# Mount read-write file system into initram root file system
 	if ! $MOUNT $ROOT_RWMOUNTPARAMS $ROOT_RWMOUNT ; then
 		fatal "Could not mount read-write rootfs"
