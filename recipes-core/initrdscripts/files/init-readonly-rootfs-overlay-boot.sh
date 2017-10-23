@@ -7,8 +7,8 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 MOUNT="/bin/mount"
 UMOUNT="/bin/umount"
-FSCK="/bin/e2fsck"
-MKFS="/bin/mkfs.ext4 -F"
+FSCK="/sbin/e2fsck"
+MKFS="/sbin/mkfs.ext4 -F"
 
 INIT="/sbin/init"
 ROOT_ROINIT="/sbin/init"
