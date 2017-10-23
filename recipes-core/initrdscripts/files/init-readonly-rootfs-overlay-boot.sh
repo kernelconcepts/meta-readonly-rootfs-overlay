@@ -7,8 +7,6 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 MOUNT="/bin/mount"
 UMOUNT="/bin/umount"
-FSCK="/sbin/e2fsck"
-MKFS="/sbin/mkfs.ext4 -F"
 
 INIT="/sbin/init"
 ROOT_ROINIT="/sbin/init"
@@ -132,10 +130,6 @@ mount_and_boot() {
 		fi
 	else
 		ROOT_RWMOUNTPARAMS="-t tmpfs -o $ROOT_RWMOUNTOPTIONS"
-	fi
-	$FSCK "${ROOT_RWDEVICE}"
-	if [ $? -gt 1]; then
-		$MKFS "${ROOT_RWDEVICE}";
 	fi
 	# Mount read-write file system into initram root file system
 	if ! $MOUNT $ROOT_RWMOUNTPARAMS $ROOT_RWMOUNT ; then
